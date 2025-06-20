@@ -1,16 +1,20 @@
 using System.Collections;
-using System.ComponentModel;
+using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.Android;
 
 public class Enemy : MonoBehaviour
 {
 
     public States currentState;
+
+    
+    Animator anim;
     Transform player;
     Material eyesMat;
     NavMeshAgent agent;
+
+    float speedWalk;
 
     Coroutine myCoro;
     Vector3 posInitial, lastPlayerPos;
@@ -25,14 +29,16 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
 
         // se almacena en la variable el "Transform" del objeto asignado con etiqueta "Player"
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         // se almacena en la variable el material asignado al segundo hijo
-        eyesMat = transform.GetChild(1).GetComponent<Renderer>().material;
+        eyesMat = transform.GetChild(0).GetComponent<Renderer>().material;
 
         posInitial = transform.position;
+        speedWalk = 1f;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -88,6 +94,8 @@ public class Enemy : MonoBehaviour
 
                 agent.isStopped = false;
                 agent.SetDestination(posInitial);
+                anim.SetBool("walk", false);
+                agent.speed = 0f;
                 break;
             case States.Suprised:
                 break;
@@ -97,6 +105,8 @@ public class Enemy : MonoBehaviour
 
                 agent.isStopped = false;
                 StartMyCoro();
+                anim.SetBool("walk", true);
+                agent.speed = speedWalk;
                 break;
             case States.PlayerLost:
 
@@ -106,10 +116,14 @@ public class Enemy : MonoBehaviour
                 agent.isStopped = false;
                 lastPlayerPos = player.position;
                 agent.SetDestination(lastPlayerPos);
+                anim.SetBool("walk", true);
+                agent.speed = speedWalk;
                 break;
             case States.PlayerCaught:
 
+                agent.speed = 0f;
                 agent.isStopped = true;
+                anim.SetBool("walk", false);
                 break;
 
         }

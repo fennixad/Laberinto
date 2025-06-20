@@ -7,6 +7,9 @@ public class PlayerMovement : MonoBehaviour
     CharacterController cc;
     Transform cam;
 
+    [Range(0f, 5f)]
+    public float speed;
+
     [Tooltip ("TRUE rotacion suave, FALSE rotacion directa")]
     public bool modoRotacion;
 
@@ -37,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 dirMov = GetDirMovement();
         Debug.DrawRay(transform.position, dirMov, Color.green);
-        cc.Move(dirMov * 3f * Time.deltaTime);
+        cc.Move(dirMov * speed * Time.deltaTime);
     }
 
     void HandleRotation()
@@ -50,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
         else transform.rotation = CalculateRotationAiming (modoRotacion);
     }
 
-    Vector3 GetDirMovement()
+    public Vector3 GetDirMovement()
     {
         Vector2 input = MyInputManager.instance.GetInputMove();
         input.Normalize();
